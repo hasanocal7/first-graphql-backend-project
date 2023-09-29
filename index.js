@@ -1,15 +1,41 @@
 import { ApolloServer } from '@apollo/server';
 import { startStandaloneServer } from '@apollo/server/standalone';
 
-const typeDefs = `#graphql
-  type Book {
-    id: ID!
-    title: String!
-    author: String!
-    score: Float!
+const messages =
+  {
+    id: "nqycUt8Hc5n9HG1",
+    title: "Merhabalar!",
+    sendBy: {
+      id: "WM53LspqgL3nBTE",
+      fullname: "Ali Efe"
+    }
   }
+
+const users = [
+  {
+    id: "QGvgAqotfDHLvvH",
+    fullname: "Hasan ÖCAL",
+    messages: messages
+  }
+];
+
+const typeDefs = `#graphql
+  
+  type Message {
+  id: ID!,
+  title: String!
+  sendBy: User 
+  }
+
+  type User {
+    id: ID!,
+    fullname: String!,
+    messages: Message!
+  }
+
   type Query {
-    books: [Book]
+    users: [User],
+    messages: [Message]
   }
 `;
 
@@ -17,28 +43,10 @@ const typeDefs = `#graphql
 
 // ID, Int, Float => SCALAR TYPES
 
-const books = [
-    {
-      title: 'Tutunamayanlar',
-      author: 'Oğuz Atay',
-      score: 8.4
-    },
-    {
-      title: 'Sefiller',
-      author: 'Victor Hugo',
-      score: 9.3
-    },
-    /* {
-      title: null,
-      author: null
-    } => "errors": [
-    {
-      "message": "Cannot return null for non-nullable field Book.author.  */
-];
-
 const resolvers = {
     Query: {
-        books: () => books,
+        users: () => users,
+        messages: () => messages
     },
 };
 
