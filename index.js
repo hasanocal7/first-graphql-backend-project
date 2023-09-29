@@ -1,40 +1,24 @@
 import { ApolloServer } from '@apollo/server';
 import { startStandaloneServer } from '@apollo/server/standalone';
-
-const messages =
-  {
-    id: "nqycUt8Hc5n9HG1",
-    title: "Merhabalar!",
-    sendBy: {
-      id: "WM53LspqgL3nBTE",
-      fullname: "Ali Efe"
-    }
-  }
-
-const users = [
-  {
-    id: "QGvgAqotfDHLvvH",
-    fullname: "Hasan ÖCAL",
-    messages: messages
-  }
-];
+import { messages, users } from './data/db.js';
 
 const typeDefs = `#graphql
   
   type Message {
   id: ID!,
-  title: String!
+  message: String!
   sendBy: User 
   }
 
   type User {
     id: ID!,
-    fullname: String!,
-    messages: Message!
+    fullname: String,
+    messages: [Message]
   }
 
-  type Query {
+  type Query{
     users: [User],
+    message(fullname: String!): Message
     messages: [Message]
   }
 `;
@@ -46,6 +30,10 @@ const typeDefs = `#graphql
 const resolvers = {
     Query: {
         users: () => users,
+        message: (parent, args) => {
+          const data = messages.find((message) => message.sendBy.fullname === args.fullname);
+          return data;
+        },
         messages: () => messages
     },
 };
