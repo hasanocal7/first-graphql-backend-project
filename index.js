@@ -3,13 +3,15 @@ import { startStandaloneServer } from '@apollo/server/standalone';
 
 const typeDefs = `#graphql
   type Book {
-    title: String
-    author: String
+    title: String!
+    author: String!
   }
   type Query {
     books: [Book]
   }
 `;
+
+// Non-Nullable Fields => ! Example: title: String!
 
 const books = [
     {
@@ -20,6 +22,12 @@ const books = [
       title: 'Sefiller',
       author: 'Victor Hugo',
     },
+    /* {
+      title: null,
+      author: null
+    } => "errors": [
+    {
+      "message": "Cannot return null for non-nullable field Book.author.  */
 ];
 
 const resolvers = {
