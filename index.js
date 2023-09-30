@@ -5,21 +5,25 @@ import { messages, users } from './data/db.js';
 const typeDefs = `#graphql
   
   type Message {
-  id: ID!,
+  id: ID!
   message: String!
-  sendBy: User 
+  sendBy: User
+  sendBy_id: ID!
+  getBy_id: ID!
+  getBy: User
   }
 
   type User {
-    id: ID!,
-    fullname: String,
+    id: ID!
+    fullname: String
     messages: [Message]
   }
 
   type Query{
-    users: [User],
-    message(fullname: String!): Message
+    users: [User]
+    message(id: String!): Message
     messages: [Message]
+    user(id: Int!): User
   }
 `;
 
@@ -31,11 +35,30 @@ const resolvers = {
     Query: {
         users: () => users,
         message: (parent, args) => {
-          const data = messages.find((message) => message.sendBy.fullname === args.fullname);
+          const data = messages.find((message) => message.id === args.id);
           return data;
         },
-        messages: () => messages
+        messages: () => messages,
+        user: (parent, args) => {
+          const data = users.find((user) => user.id === args.id);
+          return data;
+        }
     },
+
+    Message: {
+      sendBy: (parent) => {
+        return users.find(user => user.id === parent.sendBy_id)
+      },
+      getBy: (parent) => {
+        return users.find(user => user.id === parent.getBy_id)
+      }
+    },
+
+    User: {
+      messages: (parent) => {
+          return messages.filter(message => message.sendBy_id === parent.id || message.getBy_id === parent.id)
+        }
+      },
 };
 
 const server = new ApolloServer({
