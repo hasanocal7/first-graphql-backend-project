@@ -25,6 +25,10 @@ const typeDefs = `#graphql
     messages: [Message]
     user(id: Int!): User
   }
+
+  type Mutation{
+    createUser(fullname: String): User
+  }
 `;
 
 // Non-Nullable Fields => ! Example: title: String!
@@ -32,7 +36,18 @@ const typeDefs = `#graphql
 // ID, Int, Float => SCALAR TYPES
 
 const resolvers = {
-    Query: {
+  Mutation: {
+    createUser: (parent, args) => {
+      const user = {
+        fullname: args.fullname
+      }
+      users.push(user)
+
+      return user
+    }
+  },  
+  
+  Query: {
         users: () => users,
         message: (parent, args) => {
           const data = messages.find((message) => message.id === args.id);
@@ -58,7 +73,7 @@ const resolvers = {
       messages: (parent) => {
           return messages.filter(message => message.sendBy_id === parent.id || message.getBy_id === parent.id)
         }
-      },
+    },
 };
 
 const server = new ApolloServer({
